@@ -46,48 +46,33 @@ function loadConfig() {
   };
 }
 
+function saveConfig(config) {
+  fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
+}
+
 module.exports = {
-  customId: 'panel_channel_select',
+  customId: 'add_custom_button_modal',
   async execute(interaction) {
-    const selectedChannel = interaction.values[0];
-    const channel = interaction.guild.channels.cache.get(selectedChannel);
+    const config = loadConfig();
+    const label = interaction.fields.getTextInputValue('button_label');
+    const emoji = interaction.fields.getTextInputValue('button_emoji');
+    const name = interaction.fields.getTextInputValue('button_name');
 
-    if (!channel) {
-      return interaction.reply({ content: '❌ Salon non trouvé!', ephemeral: true });
+    if (config.allAvailableButtons.some(btn => btn.name === name)) {
+      return interaction.reply({
+        content: `❌ Un bouton avec l'ID "${name}" existe déjà!`,
+        ephemeral: true
+      });
     }
 
-    try {
-      const { EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder } = require('discord.js');
-      const config = loadConfig();
+    const newButton = { name, label, emoji };
+    config.allAvailableButtons.push(newButton);
+    config.panelButtons.push(newButton);
+    saveConfig(config);
 
-      const embed = new EmbedBuilder()
-        .setColor(config.colors.primary)
-        .setTitle('🎫 Système de Tickets')
-        .setDescription(config.panelMessage)
-        .addFields(...config.panelButtons.map(cat => ({
-          name: `${cat.emoji} ${cat.label}`,
-          value: `Crée un ticket ${cat.label.toLowerCase()}`,
-          inline: true,
-        })))
-        .setFooter({ text: 'Utilisez le menu déroulant pour sélectionner une catégorie' });
-
-      const selectMenu = new StringSelectMenuBuilder()
-        .setCustomId('ticket_category_select')
-        .setPlaceholder('Choisir une catégorie...')
-        .addOptions(config.panelButtons.map(cat => ({
-          label: cat.label,
-          value: cat.name,
-          emoji: cat.emoji,
-          description: `Créer un ticket ${cat.label.toLowerCase()}`
-        })));
-
-      const row = new ActionRowBuilder().addComponents(selectMenu);
-
-      await channel.send({ embeds: [embed], components: [row] });
-      await interaction.reply({ content: `✅ Panel envoyé dans ${channel}!`, ephemeral: true });
-    } catch (error) {
-      console.error('Panel send error:', error);
-      await interaction.reply({ content: '❌ Erreur lors de l\'envoi du panel! ' + error.message, ephemeral: true });
-    }
+    interaction.reply({
+      content: `✅ Bouton "${label}" (${emoji}) ajouté avec succès!\nID: ${name}`,
+      ephemeral: true
+    });
   }
 };

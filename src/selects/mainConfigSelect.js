@@ -33,7 +33,17 @@ function loadConfig() {
       { name: 'appeal', label: 'Appel', emoji: '⚖️' },
       { name: 'partnership', label: 'Partenariat', emoji: '🤝' }
     ],
-    panelMessage: '**🎫 Système de Tickets**\n\nSélectionnez la catégorie de votre ticket ci-dessous pour créer un nouveau ticket.'
+    panelMessage: '**🎫 Système de Tickets**\n\nSélectionnez la catégorie de votre ticket ci-dessous pour créer un nouveau ticket.',
+    allAvailableButtons: [
+      { name: 'support', label: 'Support', emoji: '🆘' },
+      { name: 'report', label: 'Signalement', emoji: '📋' },
+      { name: 'appeal', label: 'Appel', emoji: '⚖️' },
+      { name: 'partnership', label: 'Partenariat', emoji: '🤝' },
+      { name: 'bug', label: 'Signaler un Bug', emoji: '🐛' },
+      { name: 'suggestion', label: 'Suggestion', emoji: '💡' },
+      { name: 'feedback', label: 'Feedback', emoji: '📝' },
+      { name: 'other', label: 'Autre', emoji: '❓' }
+    ]
   };
 }
 
@@ -51,20 +61,55 @@ module.exports = {
       const buttonMenu = new StringSelectMenuBuilder()
         .setCustomId('manage_buttons_select')
         .setPlaceholder('Gérer les boutons du panel')
-        .setMaxValues(config.panelButtons.length)
-        .addOptions(config.panelButtons.map(btn => ({
+        .setMinValues(1)
+        .setMaxValues(config.allAvailableButtons.length)
+        .addOptions(config.allAvailableButtons.map(btn => ({
           label: btn.label,
           value: btn.name,
           emoji: btn.emoji,
-          default: true
+          default: config.panelButtons.some(pb => pb.name === btn.name)
         })));
 
       const row = new ActionRowBuilder().addComponents(buttonMenu);
       return interaction.reply({
-        content: '🔘 Sélectionnez les boutons que vous voulez garder dans le panel:',
+        content: '🔘 Sélectionnez les boutons que vous voulez dans le panel:',
         components: [row],
         ephemeral: true
       });
+    }
+
+    if (value === 'add_custom_button') {
+      const modal = new ModalBuilder()
+        .setCustomId('add_custom_button_modal')
+        .setTitle('Ajouter un bouton personnalisé');
+
+      const labelInput = new TextInputBuilder()
+        .setCustomId('button_label')
+        .setLabel('Nom du bouton')
+        .setStyle(TextInputStyle.Short)
+        .setMaxLength(100)
+        .setRequired(true);
+
+      const emojiInput = new TextInputBuilder()
+        .setCustomId('button_emoji')
+        .setLabel('Emoji du bouton')
+        .setStyle(TextInputStyle.Short)
+        .setMaxLength(10)
+        .setRequired(true);
+
+      const nameInput = new TextInputBuilder()
+        .setCustomId('button_name')
+        .setLabel('ID du bouton (sans espaces)')
+        .setStyle(TextInputStyle.Short)
+        .setMaxLength(50)
+        .setRequired(true);
+
+      const row1 = new ActionRowBuilder().addComponents(labelInput);
+      const row2 = new ActionRowBuilder().addComponents(emojiInput);
+      const row3 = new ActionRowBuilder().addComponents(nameInput);
+      modal.addComponents(row1, row2, row3);
+
+      return interaction.showModal(modal);
     }
 
     if (value === 'edit_panel_message') {

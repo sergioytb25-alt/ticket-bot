@@ -32,7 +32,17 @@ function loadConfig() {
       { name: 'appeal', label: 'Appel', emoji: '⚖️' },
       { name: 'partnership', label: 'Partenariat', emoji: '🤝' }
     ],
-    panelMessage: '**🎫 Système de Tickets**\n\nSélectionnez la catégorie de votre ticket ci-dessous pour créer un nouveau ticket.'
+    panelMessage: '**🎫 Système de Tickets**\n\nSélectionnez la catégorie de votre ticket ci-dessous pour créer un nouveau ticket.',
+    allAvailableButtons: [
+      { name: 'support', label: 'Support', emoji: '🆘' },
+      { name: 'report', label: 'Signalement', emoji: '📋' },
+      { name: 'appeal', label: 'Appel', emoji: '⚖️' },
+      { name: 'partnership', label: 'Partenariat', emoji: '🤝' },
+      { name: 'bug', label: 'Signaler un Bug', emoji: '🐛' },
+      { name: 'suggestion', label: 'Suggestion', emoji: '💡' },
+      { name: 'feedback', label: 'Feedback', emoji: '📝' },
+      { name: 'other', label: 'Autre', emoji: '❓' }
+    ]
   };
 }
 
@@ -46,12 +56,7 @@ module.exports = {
     const config = loadConfig();
     const selectedButtons = interaction.values;
 
-    const allButtons = [
-      { name: 'support', label: 'Support', emoji: '🆘' },
-      { name: 'report', label: 'Signalement', emoji: '📋' },
-      { name: 'appeal', label: 'Appel', emoji: '⚖️' },
-      { name: 'partnership', label: 'Partenariat', emoji: '🤝' }
-    ];
+    const allButtons = config.allAvailableButtons;
 
     config.panelButtons = allButtons.filter(btn => selectedButtons.includes(btn.name));
     saveConfig(config);

@@ -33,7 +33,17 @@ function loadConfig() {
       { name: 'appeal', label: 'Appel', emoji: '⚖️' },
       { name: 'partnership', label: 'Partenariat', emoji: '🤝' }
     ],
-    panelMessage: '**🎫 Système de Tickets**\n\nSélectionnez la catégorie de votre ticket ci-dessous pour créer un nouveau ticket.'
+    panelMessage: '**🎫 Système de Tickets**\n\nSélectionnez la catégorie de votre ticket ci-dessous pour créer un nouveau ticket.',
+    allAvailableButtons: [
+      { name: 'support', label: 'Support', emoji: '🆘' },
+      { name: 'report', label: 'Signalement', emoji: '📋' },
+      { name: 'appeal', label: 'Appel', emoji: '⚖️' },
+      { name: 'partnership', label: 'Partenariat', emoji: '🤝' },
+      { name: 'bug', label: 'Signaler un Bug', emoji: '🐛' },
+      { name: 'suggestion', label: 'Suggestion', emoji: '💡' },
+      { name: 'feedback', label: 'Feedback', emoji: '📝' },
+      { name: 'other', label: 'Autre', emoji: '❓' }
+    ]
   };
 }
 
@@ -152,7 +162,7 @@ module.exports = {
             .setTitle('⚙️ Configuration Complète')
             .setDescription('Configurez tous les aspects du système de tickets')
             .addFields(
-              { name: '📝 Catégories', value: `${config.panelButtons.length} boutons configurés`, inline: true },
+              { name: '📝 Boutons', value: `${config.panelButtons.length} boutons configurés`, inline: true },
               { name: '🎨 Couleurs', value: 'Personnalisables', inline: true },
               { name: '💬 Messages', value: 'Modifiables', inline: true },
               { name: '⏰ Limites', value: `Max: ${config.messages.maxTickets} tickets`, inline: true }
@@ -162,7 +172,8 @@ module.exports = {
             .setCustomId('main_config_select')
             .setPlaceholder('Que voulez-vous configurer?')
             .addOptions([
-              { label: 'Gérer les Boutons', value: 'manage_buttons', emoji: '🔘', description: 'Ajouter/Retirer des boutons du panel' },
+              { label: 'Gérer les Boutons', value: 'manage_buttons', emoji: '🔘', description: 'Activer/Désactiver les boutons' },
+              { label: 'Ajouter un Bouton', value: 'add_custom_button', emoji: '➕', description: 'Créer un bouton personnalisé' },
               { label: 'Message du Panel', value: 'edit_panel_message', emoji: '💬', description: 'Modifier le message du panel' },
               { label: 'Couleur Primaire', value: 'color_primary', emoji: '🎨', description: 'Modifier la couleur primaire' },
               { label: 'Couleur Succès', value: 'color_success', emoji: '✅', description: 'Modifier la couleur de succès' },
