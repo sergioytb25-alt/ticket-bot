@@ -42,7 +42,7 @@ function loadConfig() {
       { name: 'bug', label: 'Signaler un Bug', emoji: '🐛' },
       { name: 'suggestion', label: 'Suggestion', emoji: '💡' },
       { name: 'feedback', label: 'Feedback', emoji: '📝' },
-      { name: 'other', label: 'Autre', emoji: '❓' }
+      { name: 'other', label: 'Autre', emoji: '📞' }
     ]
   };
 }
