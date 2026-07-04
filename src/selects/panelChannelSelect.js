@@ -11,7 +11,7 @@ function loadConfig() {
     categories: [
       { name: 'support', label: 'Support', emoji: '🆘' },
       { name: 'report', label: 'Signalement', emoji: '📋' },
-      { name: 'appeal', label: 'Appel', emoji: '⚖️' },
+      { name: 'appeal', label: 'Appel', emoji: '⚔️' },
       { name: 'partnership', label: 'Partenariat', emoji: '🤝' }
     ],
     colors: {
@@ -29,19 +29,19 @@ function loadConfig() {
     panelButtons: [
       { name: 'support', label: 'Support', emoji: '🆘' },
       { name: 'report', label: 'Signalement', emoji: '📋' },
-      { name: 'appeal', label: 'Appel', emoji: '⚖️' },
+      { name: 'appeal', label: 'Appel', emoji: '⚔️' },
       { name: 'partnership', label: 'Partenariat', emoji: '🤝' }
     ],
     panelMessage: '**🎫 Système de Tickets**\n\nSélectionnez la catégorie de votre ticket ci-dessous pour créer un nouveau ticket.',
     allAvailableButtons: [
       { name: 'support', label: 'Support', emoji: '🆘' },
       { name: 'report', label: 'Signalement', emoji: '📋' },
-      { name: 'appeal', label: 'Appel', emoji: '⚖️' },
+      { name: 'appeal', label: 'Appel', emoji: '⚔️' },
       { name: 'partnership', label: 'Partenariat', emoji: '🤝' },
       { name: 'bug', label: 'Signaler un Bug', emoji: '🐛' },
       { name: 'suggestion', label: 'Suggestion', emoji: '💡' },
       { name: 'feedback', label: 'Feedback', emoji: '📝' },
-      { name: 'other', label: 'Autre', emoji: '❓' }
+      { name: 'other', label: 'Autre', emoji: '📞' }
     ]
   };
 }
