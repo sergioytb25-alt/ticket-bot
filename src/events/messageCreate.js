@@ -103,8 +103,8 @@ module.exports = {
           const embed = new EmbedBuilder()
             .setColor(config.colors.primary)
             .setTitle('🎫 Système de Tickets')
-            .setDescription('Sélectionnez la catégorie de votre ticket ci-dessous')
-            .addFields(...config.categories.map(cat => ({
+            .setDescription(config.panelMessage)
+            .addFields(...config.panelButtons.map(cat => ({
               name: `${cat.emoji} ${cat.label}`,
               value: `Crée un ticket ${cat.label.toLowerCase()}`,
               inline: true,
@@ -114,7 +114,7 @@ module.exports = {
           const selectMenu = new StringSelectMenuBuilder()
             .setCustomId('ticket_category_select')
             .setPlaceholder('Choisir une catégorie...')
-            .addOptions(config.categories.map(cat => ({
+            .addOptions(config.panelButtons.map(cat => ({
               label: cat.label,
               value: cat.name,
               emoji: cat.emoji,
