@@ -74,10 +74,10 @@ module.exports = {
       const row = new ActionRowBuilder().addComponents(selectMenu);
 
       await channel.send({ embeds: [embed], components: [row] });
-      interaction.reply({ content: `✅ Panel envoyé dans ${channel}!`, ephemeral: true });
+      await interaction.reply({ content: `✅ Panel envoyé dans ${channel}!`, ephemeral: true });
     } catch (error) {
       console.error('Panel send error:', error);
-      interaction.reply({ content: '❌ Erreur lors de l\'envoi du panel!', ephemeral: true });
+      await interaction.reply({ content: '❌ Erreur lors de l\'envoi du panel!', ephemeral: true });
     }
   }
 };

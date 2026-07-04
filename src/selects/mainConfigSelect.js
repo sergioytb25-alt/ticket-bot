@@ -1,4 +1,4 @@
-const { EmbedBuilder, ModalBuilder, ActionRowBuilder, TextInputBuilder, TextInputStyle } = require('discord.js');
+const { EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require('discord.js');
 const fs = require('fs');
 const path = require('path');
 
@@ -26,7 +26,14 @@ function loadConfig() {
       welcome: 'Bienvenue dans ce ticket de support!',
       maxTickets: 3,
       ticketPrefix: 'ticket'
-    }
+    },
+    panelButtons: [
+      { name: 'support', label: 'Support', emoji: '🆘' },
+      { name: 'report', label: 'Signalement', emoji: '📋' },
+      { name: 'appeal', label: 'Appel', emoji: '⚖️' },
+      { name: 'partnership', label: 'Partenariat', emoji: '🤝' }
+    ],
+    panelMessage: '**🎫 Système de Tickets**\n\nSélectionnez la catégorie de votre ticket ci-dessous pour créer un nouveau ticket.'
   };
 }
 
@@ -37,62 +44,147 @@ function saveConfig(config) {
 module.exports = {
   customId: 'main_config_select',
   async execute(interaction) {
-    const choice = interaction.values[0];
     const config = loadConfig();
+    const value = interaction.values[0];
 
-    try {
-      if (choice === 'color_primary' || choice === 'color_success' || choice === 'color_error' || choice === 'color_warning' || choice === 'color_info') {
-        const colorMap = {
-          'color_primary': 'primary',
-          'color_success': 'success',
-          'color_error': 'error',
-          'color_warning': 'warning',
-          'color_info': 'info'
-        };
-        const colorKey = colorMap[choice];
+    if (value === 'manage_buttons') {
+      const buttonMenu = new StringSelectMenuBuilder()
+        .setCustomId('manage_buttons_select')
+        .setPlaceholder('Gérer les boutons du panel')
+        .setMaxValues(config.panelButtons.length)
+        .addOptions(config.panelButtons.map(btn => ({
+          label: btn.label,
+          value: btn.name,
+          emoji: btn.emoji,
+          default: true
+        })));
 
-        const modal = new ModalBuilder()
-          .setCustomId(`color_modal_${colorKey}`)
-          .setTitle(`Modifier la couleur ${colorKey}`);
-
-        const colorInput = new TextInputBuilder()
-          .setCustomId('hex_color')
-          .setLabel('Code hexadécimal (ex: #FF0000)')
-          .setStyle(TextInputStyle.Short)
-          .setRequired(true)
-          .setPlaceholder('#5865F2')
-          .setMaxLength(7);
-
-        const row = new ActionRowBuilder().addComponents(colorInput);
-        modal.addComponents(row);
-
-        return await interaction.showModal(modal);
-      }
-
-      if (choice === 'preview_config') {
-        const embed = new EmbedBuilder()
-          .setColor(config.colors.primary)
-          .setTitle('👁️ Aperçu Complet de la Configuration')
-          .addFields(
-            { name: '📝 Catégories', value: `${config.categories.length} catégories`, inline: true },
-            { name: '🎨 Couleurs', value: '5 couleurs personnalisées', inline: true },
-            { name: '💬 Messages', value: 'Messages configurés', inline: true },
-            { name: 'Primaire', value: config.colors.primary, inline: true },
-            { name: 'Succès', value: config.colors.success, inline: true },
-            { name: 'Erreur', value: config.colors.error, inline: true },
-            { name: 'Avertissement', value: config.colors.warning, inline: true },
-            { name: 'Info', value: config.colors.info, inline: true }
-          )
-          .setDescription('Configuration complète du système de tickets');
-
-        return await interaction.reply({ embeds: [embed], ephemeral: true });
-      }
-    } catch (error) {
-      console.error('Erreur lors du traitement du menu de configuration:', error);
-      return await interaction.reply({
-        content: '❌ Erreur lors du traitement de la configuration!',
-        ephemeral: true,
+      const row = new ActionRowBuilder().addComponents(buttonMenu);
+      return interaction.reply({
+        content: '🔘 Sélectionnez les boutons que vous voulez garder dans le panel:',
+        components: [row],
+        ephemeral: true
       });
     }
-  },
+
+    if (value === 'edit_panel_message') {
+      const modal = new ModalBuilder()
+        .setCustomId('edit_panel_message_modal')
+        .setTitle('Modifier le message du panel');
+
+      const messageInput = new TextInputBuilder()
+        .setCustomId('panel_message_input')
+        .setLabel('Message du panel')
+        .setStyle(TextInputStyle.Paragraph)
+        .setValue(config.panelMessage)
+        .setMaxLength(2000);
+
+      const row = new ActionRowBuilder().addComponents(messageInput);
+      modal.addComponents(row);
+
+      return interaction.showModal(modal);
+    }
+
+    if (value === 'color_primary') {
+      const modal = new ModalBuilder()
+        .setCustomId('color_primary_modal')
+        .setTitle('Modifier la couleur primaire');
+
+      const colorInput = new TextInputBuilder()
+        .setCustomId('color_input')
+        .setLabel('Couleur (hex format: #RRGGBB)')
+        .setStyle(TextInputStyle.Short)
+        .setValue(config.colors.primary);
+
+      const row = new ActionRowBuilder().addComponents(colorInput);
+      modal.addComponents(row);
+
+      return interaction.showModal(modal);
+    }
+
+    if (value === 'color_success') {
+      const modal = new ModalBuilder()
+        .setCustomId('color_success_modal')
+        .setTitle('Modifier la couleur de succès');
+
+      const colorInput = new TextInputBuilder()
+        .setCustomId('color_input')
+        .setLabel('Couleur (hex format: #RRGGBB)')
+        .setStyle(TextInputStyle.Short)
+        .setValue(config.colors.success);
+
+      const row = new ActionRowBuilder().addComponents(colorInput);
+      modal.addComponents(row);
+
+      return interaction.showModal(modal);
+    }
+
+    if (value === 'color_error') {
+      const modal = new ModalBuilder()
+        .setCustomId('color_error_modal')
+        .setTitle('Modifier la couleur d\'erreur');
+
+      const colorInput = new TextInputBuilder()
+        .setCustomId('color_input')
+        .setLabel('Couleur (hex format: #RRGGBB)')
+        .setStyle(TextInputStyle.Short)
+        .setValue(config.colors.error);
+
+      const row = new ActionRowBuilder().addComponents(colorInput);
+      modal.addComponents(row);
+
+      return interaction.showModal(modal);
+    }
+
+    if (value === 'color_warning') {
+      const modal = new ModalBuilder()
+        .setCustomId('color_warning_modal')
+        .setTitle('Modifier la couleur d\'avertissement');
+
+      const colorInput = new TextInputBuilder()
+        .setCustomId('color_input')
+        .setLabel('Couleur (hex format: #RRGGBB)')
+        .setStyle(TextInputStyle.Short)
+        .setValue(config.colors.warning);
+
+      const row = new ActionRowBuilder().addComponents(colorInput);
+      modal.addComponents(row);
+
+      return interaction.showModal(modal);
+    }
+
+    if (value === 'color_info') {
+      const modal = new ModalBuilder()
+        .setCustomId('color_info_modal')
+        .setTitle('Modifier la couleur info');
+
+      const colorInput = new TextInputBuilder()
+        .setCustomId('color_input')
+        .setLabel('Couleur (hex format: #RRGGBB)')
+        .setStyle(TextInputStyle.Short)
+        .setValue(config.colors.info);
+
+      const row = new ActionRowBuilder().addComponents(colorInput);
+      modal.addComponents(row);
+
+      return interaction.showModal(modal);
+    }
+
+    if (value === 'preview_config') {
+      const embed = new EmbedBuilder()
+        .setColor(config.colors.primary)
+        .setTitle('⚙️ Configuration Actuelle')
+        .addFields(
+          { name: '🔘 Boutons du Panel', value: config.panelButtons.map(b => `${b.emoji} ${b.label}`).join('\n'), inline: true },
+          { name: '💬 Message', value: config.panelMessage, inline: false },
+          { name: '🎨 Couleur Primaire', value: config.colors.primary, inline: true },
+          { name: '✅ Couleur Succès', value: config.colors.success, inline: true },
+          { name: '❌ Couleur Erreur', value: config.colors.error, inline: true },
+          { name: '⚠️ Couleur Avertissement', value: config.colors.warning, inline: true },
+          { name: 'ℹ️ Couleur Info', value: config.colors.info, inline: true }
+        );
+
+      return interaction.reply({ embeds: [embed], ephemeral: true });
+    }
+  }
 };
