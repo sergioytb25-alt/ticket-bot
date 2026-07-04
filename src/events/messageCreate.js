@@ -1,4 +1,4 @@
-const { EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require('discord.js');
+const { EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, ChannelSelectMenuBuilder } = require('discord.js');
 const fs = require('fs');
 const path = require('path');
 
@@ -26,7 +26,14 @@ function loadConfig() {
       welcome: 'Bienvenue dans ce ticket de support!',
       maxTickets: 3,
       ticketPrefix: 'ticket'
-    }
+    },
+    panelButtons: [
+      { name: 'support', label: 'Support', emoji: '🆘' },
+      { name: 'report', label: 'Signalement', emoji: '📋' },
+      { name: 'appeal', label: 'Appel', emoji: '⚖️' },
+      { name: 'partnership', label: 'Partenariat', emoji: '🤝' }
+    ],
+    panelMessage: '**🎫 Système de Tickets**\n\nSélectionnez la catégorie de votre ticket ci-dessous pour créer un nouveau ticket.'
   };
 }
 
@@ -119,28 +126,20 @@ module.exports = {
         }
 
         if (subcommand === 'panel') {
-          const modal = new ModalBuilder()
-            .setCustomId('create_panel_modal')
-            .setTitle('Créer un panneau de tickets');
+          if (!message.member.permissions.has('Administrator')) {
+            return message.reply('❌ Permission refusée! (Administrateur seulement)');
+          }
 
-          const messageInput = new TextInputBuilder()
-            .setCustomId('panel_message')
-            .setLabel('Message du panneau')
-            .setStyle(TextInputStyle.Paragraph)
-            .setRequired(true)
-            .setMaxLength(500);
+          const channelSelect = new ChannelSelectMenuBuilder()
+            .setCustomId('panel_channel_select')
+            .setPlaceholder('Sélectionnez le salon où envoyer le panel');
 
-          const channelInput = new TextInputBuilder()
-            .setCustomId('panel_channel')
-            .setLabel('ID du salon (ou laissez vide pour ici)')
-            .setStyle(TextInputStyle.Short)
-            .setRequired(false);
+          const row = new ActionRowBuilder().addComponents(channelSelect);
 
-          const firstRow = new ActionRowBuilder().addComponents(messageInput);
-          const secondRow = new ActionRowBuilder().addComponents(channelInput);
-
-          modal.addComponents(firstRow, secondRow);
-          return await message.showModal(modal);
+          return message.reply({
+            content: '📍 Sélectionnez le salon où vous voulez envoyer le panel de tickets:',
+            components: [row]
+          });
         }
 
         if (subcommand === 'config') {
@@ -153,7 +152,7 @@ module.exports = {
             .setTitle('⚙️ Configuration Complète')
             .setDescription('Configurez tous les aspects du système de tickets')
             .addFields(
-              { name: '📝 Catégories', value: `${config.categories.length} catégories configurées`, inline: true },
+              { name: '📝 Catégories', value: `${config.panelButtons.length} boutons configurés`, inline: true },
               { name: '🎨 Couleurs', value: 'Personnalisables', inline: true },
               { name: '💬 Messages', value: 'Modifiables', inline: true },
               { name: '⏰ Limites', value: `Max: ${config.messages.maxTickets} tickets`, inline: true }
@@ -163,6 +162,8 @@ module.exports = {
             .setCustomId('main_config_select')
             .setPlaceholder('Que voulez-vous configurer?')
             .addOptions([
+              { label: 'Gérer les Boutons', value: 'manage_buttons', emoji: '🔘', description: 'Ajouter/Retirer des boutons du panel' },
+              { label: 'Message du Panel', value: 'edit_panel_message', emoji: '💬', description: 'Modifier le message du panel' },
               { label: 'Couleur Primaire', value: 'color_primary', emoji: '🎨', description: 'Modifier la couleur primaire' },
               { label: 'Couleur Succès', value: 'color_success', emoji: '✅', description: 'Modifier la couleur de succès' },
               { label: 'Couleur Erreur', value: 'color_error', emoji: '❌', description: 'Modifier la couleur d\'erreur' },
